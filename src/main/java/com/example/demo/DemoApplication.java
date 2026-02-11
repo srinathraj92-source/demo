@@ -15,7 +15,7 @@ public class DemoApplication {
 
 	@GetMapping("test")
 	public String test(){
-		return "PRATAP LOVES HR";
+		return "Jai Sree Ram";
 	}
 
 }
