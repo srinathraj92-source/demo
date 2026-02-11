@@ -26,7 +26,7 @@ pipeline{
                 }
             }
         }
-              stage('ts06en1796') {
+              stage('TS06EL1796') {
             steps {
                 script {
                     sh 'cp $BUILD_JAR $APP_DIR/$JAR_NAME'
@@ -35,6 +35,7 @@ pipeline{
         }
     }
 }
+
 
 
 
