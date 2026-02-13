@@ -5,7 +5,7 @@ pipeline{
     }
     environment{
         APP_DIR="/opt/springboot-app"
-        JAR_NAME="pratap1.jar"
+        JAR_NAME="pratap2.jar"
         BUILD_JAR="target/demo-0.0.2-SNAPSHOT.jar"
     }
     stages{
@@ -35,6 +35,7 @@ pipeline{
         }
     }
 }
+
 
 
 
