@@ -1,47 +1,62 @@
-pipeline{
+pipeline {
     agent any
-    tools{
+
+    tools {
         maven 'MAVEN'
     }
-    environment{
-        APP_DIR="/opt/springboot-app"
-        JAR_NAME="pratap2.jar"
-        BUILD_JAR="target/demo-0.0.2-SNAPSHOT.jar"
+
+    environment {
+        APP_DIR   = "/opt/springboot-app"
+        JAR_NAME  = "app.jar"
+        BUILD_JAR = "target/demo-0.0.2-SNAPSHOT.jar"
+
+        DOCKERHUB_USER = "srinathraj08"
+        DOCKERHUB_PASS = "Srinathraj@08"
+
+        DOCKERHUB_REPO = "srinathraj08/raj"
+
+        IMAGE_TAG    = "${BUILD_NUMBER}"
+        IMAGE_FULL   = "${DOCKERHUB_REPO}:${IMAGE_TAG}"
+        IMAGE_LATEST = "${DOCKERHUB_REPO}:latest"
     }
-    stages{
-        stage('Checkout'){
-            steps{
-               checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/srinathraj92-source/demo.git']])
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scmGit(
+                    branches: [[name: '*/main']],
+                    extensions: [],
+                    userRemoteConfigs: [[url: 'https://github.com/srinathraj92-source/demo.git']]
+                )
+            }
         }
-        }
-        stage('Build maven project'){
-            steps{
+
+        stage('Build maven project') {
+            steps {
                 sh "mvn clean install -DskipTests=true"
             }
         }
-        stage('Test') {
+
+        stage('Docker Build') {
             steps {
-                script {
-                    sh 'mvn test'
-                }
+                sh """
+                  set -eux
+                  test -f ${BUILD_JAR}
+                  docker build --build-arg JAR_FILE=${BUILD_JAR} \
+                  -t ${IMAGE_LATEST} .
+                """
             }
         }
-              stage('TS06EL1796') {
+
+        stage('Docker Login & Push') {
             steps {
-                script {
-                    sh 'cp $BUILD_JAR $APP_DIR/$JAR_NAME'
-                }
+                sh """
+                  echo "${DOCKERHUB_PASS}" | docker login -u "${DOCKERHUB_USER}" --password-stdin
+                  docker push ${IMAGE_LATEST}
+                  docker logout
+                """
             }
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
